@@ -1,0 +1,1602 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model about_about {
+  id             BigInt   @id @default(autoincrement())
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  description    String
+  description_uz String?
+  description_sr String?
+  description_ru String?
+}
+
+model about_advertisement {
+  id           BigInt   @id @default(autoincrement())
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  type         String   @db.VarChar(200)
+  cover        String   @db.VarChar(100)
+  redirect_url String   @db.VarChar(200)
+  is_active    Boolean
+}
+
+model about_application {
+  id           BigInt   @id @default(autoincrement())
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  full_name    String   @db.VarChar(256)
+  phone_number String   @db.VarChar(25)
+  question     String
+  was_seen     Boolean
+}
+
+model about_contact {
+  id              BigInt           @id @default(autoincrement())
+  phone           String           @db.VarChar(255)
+  email           String           @db.VarChar(255)
+  address         String           @db.VarChar(255)
+  latitude        Float?
+  longitude       Float?
+  telegram        String?          @db.VarChar(255)
+  twitter         String?          @db.VarChar(255)
+  youtube         String?          @db.VarChar(255)
+  instagram       String?          @db.VarChar(255)
+  facebook        String?          @db.VarChar(255)
+  address_ru      String?          @db.VarChar(255)
+  address_sr      String?          @db.VarChar(255)
+  address_uz      String?          @db.VarChar(255)
+  work_from       DateTime?        @db.Time(6)
+  work_to         DateTime?        @db.Time(6)
+  office_name     String           @db.VarChar(255)
+  office_city_id  BigInt?
+  common_district common_district? @relation(fields: [office_city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_contact_office_city_id_df3764d6_fk_common_district_id")
+
+  @@index([office_city_id], map: "about_contact_office_city_id_df3764d6")
+}
+
+model about_instruction {
+  id                        BigInt                    @id @default(autoincrement())
+  created_at                DateTime                  @db.Timestamptz(6)
+  updated_at                DateTime                  @db.Timestamptz(6)
+  title                     String                    @db.VarChar(255)
+  title_uz                  String?                   @db.VarChar(255)
+  title_sr                  String?                   @db.VarChar(255)
+  title_ru                  String?                   @db.VarChar(255)
+  content                   String
+  content_uz                String?
+  content_sr                String?
+  content_ru                String?
+  is_active                 Boolean
+  description               String
+  category_id               BigInt
+  description_ru            String?
+  description_sr            String?
+  description_uz            String?
+  about_instructioncategory about_instructioncategory @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_instruction_category_id_c898a9fc_fk_about_ins")
+  about_instructionanswer   about_instructionanswer[]
+
+  @@index([category_id], map: "about_instruction_category_id_c898a9fc")
+}
+
+model about_instructionanswer {
+  id                BigInt            @id @default(autoincrement())
+  created_at        DateTime          @db.Timestamptz(6)
+  updated_at        DateTime          @db.Timestamptz(6)
+  answer            String            @db.VarChar(255)
+  instruction_id    BigInt
+  user_id           BigInt?
+  about_instruction about_instruction @relation(fields: [instruction_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_instructionans_instruction_id_ad5f297f_fk_about_ins")
+  account_user      account_user?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_instructionanswer_user_id_d02f5a50_fk_account_user_id")
+
+  @@index([instruction_id], map: "about_instructionanswer_instruction_id_ad5f297f")
+  @@index([user_id], map: "about_instructionanswer_user_id_d02f5a50")
+}
+
+model about_instructioncategory {
+  id                BigInt              @id @default(autoincrement())
+  created_at        DateTime            @db.Timestamptz(6)
+  updated_at        DateTime            @db.Timestamptz(6)
+  title             String              @db.VarChar(255)
+  icon              String              @db.VarChar(100)
+  title_ru          String?             @db.VarChar(255)
+  title_sr          String?             @db.VarChar(255)
+  title_uz          String?             @db.VarChar(255)
+  about_instruction about_instruction[]
+}
+
+model about_setting {
+  id                                                                                     BigInt                                @id @default(autoincrement())
+  main_page_category_for_body_bath_id                                                    BigInt?
+  main_page_category_for_ladies_id                                                       BigInt?
+  cashback_percent                                                                       Decimal                               @db.Decimal(5, 2)
+  mobile_main_page_category_for_body_id                                                  BigInt?
+  OFFICE_FROM_LATITUDE                                                                   Decimal                               @db.Decimal(9, 6)
+  OFFICE_FROM_LONGITUDE                                                                  Decimal                               @db.Decimal(9, 6)
+  soliq_nds                                                                              Float
+  main_warehouse_id                                                                      BigInt?
+  product_category_about_setting_main_page_category_for_ladies_idToproduct_category      product_category?                     @relation("about_setting_main_page_category_for_ladies_idToproduct_category", fields: [main_page_category_for_ladies_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_main_page_category_f_3fbd32ca_fk_product_c")
+  product_category_about_setting_main_page_category_for_body_bath_idToproduct_category   product_category?                     @relation("about_setting_main_page_category_for_body_bath_idToproduct_category", fields: [main_page_category_for_body_bath_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_main_page_category_f_cb90ba51_fk_product_c")
+  product_warehouse                                                                      product_warehouse?                    @relation(fields: [main_warehouse_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_main_warehouse_id_85ec387f_fk_product_w")
+  product_category_about_setting_mobile_main_page_category_for_body_idToproduct_category product_category?                     @relation("about_setting_mobile_main_page_category_for_body_idToproduct_category", fields: [mobile_main_page_category_for_body_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_mobile_main_page_cat_bd63fd99_fk_product_c")
+  about_setting_own_delivery_disticts                                                    about_setting_own_delivery_disticts[]
+  about_setting_own_delivery_regions                                                     about_setting_own_delivery_regions[]
+
+  @@index([main_page_category_for_body_bath_id], map: "about_setting_main_page_category_for_body_bath_id_cb90ba51")
+  @@index([main_page_category_for_ladies_id], map: "about_setting_main_page_category_for_ladies_id_3fbd32ca")
+  @@index([main_warehouse_id], map: "about_setting_main_warehouse_id_85ec387f")
+  @@index([mobile_main_page_category_for_body_id], map: "about_setting_mobile_main_page_category_for_body_id_bd63fd99")
+}
+
+model about_setting_own_delivery_disticts {
+  id              BigInt          @id @default(autoincrement())
+  setting_id      BigInt
+  district_id     BigInt
+  common_district common_district @relation(fields: [district_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_own_de_district_id_374a1baf_fk_common_di")
+  about_setting   about_setting   @relation(fields: [setting_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_own_de_setting_id_2616305a_fk_about_set")
+
+  @@unique([setting_id, district_id], map: "about_setting_own_delive_setting_id_district_id_0f6caa8a_uniq")
+  @@index([district_id], map: "about_setting_own_delivery_disticts_district_id_374a1baf")
+  @@index([setting_id], map: "about_setting_own_delivery_disticts_setting_id_2616305a")
+}
+
+model about_setting_own_delivery_regions {
+  id            BigInt        @id @default(autoincrement())
+  setting_id    BigInt
+  region_id     BigInt
+  common_region common_region @relation(fields: [region_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_own_de_region_id_e9a45c6d_fk_common_re")
+  about_setting about_setting @relation(fields: [setting_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_setting_own_de_setting_id_cba87cb8_fk_about_set")
+
+  @@unique([setting_id, region_id], map: "about_setting_own_delive_setting_id_region_id_f1737162_uniq")
+  @@index([region_id], map: "about_setting_own_delivery_regions_region_id_e9a45c6d")
+  @@index([setting_id], map: "about_setting_own_delivery_regions_setting_id_cba87cb8")
+}
+
+model about_sociallink {
+  id    BigInt @id @default(autoincrement())
+  title String @db.VarChar(255)
+  url   String @db.VarChar(200)
+  order Int
+  icon  String @db.VarChar(100)
+}
+
+model about_termsofuse {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  content    String
+  content_uz String?
+  content_sr String?
+  content_ru String?
+}
+
+model about_typo {
+  id               BigInt             @id @default(autoincrement())
+  created_at       DateTime           @db.Timestamptz(6)
+  updated_at       DateTime           @db.Timestamptz(6)
+  content          String
+  user_id          BigInt?
+  status           Int                @db.SmallInt
+  account_user     account_user?      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_typo_user_id_918e2917_fk_account_user_id")
+  about_typoimages about_typoimages[]
+
+  @@index([user_id], map: "about_typo_user_id_918e2917")
+}
+
+model about_typoimages {
+  id         BigInt      @id @default(autoincrement())
+  image      String      @db.VarChar(100)
+  typo_id    BigInt?
+  about_typo about_typo? @relation(fields: [typo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "about_typoimages_typo_id_af0585a9_fk_about_typo_id")
+
+  @@index([typo_id], map: "about_typoimages_typo_id_af0585a9")
+}
+
+model account_courier {
+  id            BigInt        @id @default(autoincrement())
+  created_at    DateTime      @db.Timestamptz(6)
+  updated_at    DateTime      @db.Timestamptz(6)
+  contact_phone String        @db.VarChar(13)
+  role          Int           @db.SmallInt
+  user_id       BigInt        @unique
+  car_number    String        @db.VarChar(13)
+  account_user  account_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_courier_user_id_78db3df4_fk_account_user_id")
+  order_order   order_order[]
+}
+
+model account_registrationstate {
+  id                BigInt    @id @default(autoincrement())
+  ip                String?   @db.VarChar(128)
+  state_start_at    DateTime  @db.Timestamptz(6)
+  state_expire_at   DateTime  @db.Timestamptz(6)
+  state             String    @db.VarChar(32)
+  uuid              String    @db.Uuid
+  full_name         String?   @db.VarChar(128)
+  phone             String?   @db.VarChar(16)
+  referral          String?   @db.VarChar(10)
+  code              String?   @db.VarChar(128)
+  attempts          Int
+  expire_at         DateTime? @db.Timestamptz(6)
+  confirm_at        DateTime? @db.Timestamptz(6)
+  error_message     String?
+  password_attempts Int
+  api_response      String?
+}
+
+model account_user {
+  id                                              BigInt                             @id @default(autoincrement())
+  password                                        String                             @db.VarChar(128)
+  last_login                                      DateTime?                          @db.Timestamptz(6)
+  is_superuser                                    Boolean
+  created_at                                      DateTime                           @db.Timestamptz(6)
+  updated_at                                      DateTime                           @db.Timestamptz(6)
+  role                                            Int
+  email                                           String?                            @db.VarChar(254)
+  is_staff                                        Boolean
+  is_active                                       Boolean
+  date_joined                                     DateTime                           @db.Timestamptz(6)
+  device                                          String?                            @db.VarChar(500)
+  ip_address                                      String?                            @db.VarChar(30)
+  is_verified                                     Boolean
+  pin                                             String                             @db.VarChar(10)
+  last_generated                                  DateTime?                          @db.Timestamptz(6)
+  phone                                           String                             @unique @db.VarChar(128)
+  full_name                                       String?                            @db.VarChar(128)
+  address                                         String?                            @db.VarChar(512)
+  avatar                                          String?                            @db.VarChar(100)
+  coupon_balance                                  Decimal                            @db.Decimal(18, 2)
+  language                                        String?                            @db.VarChar(16)
+  district_id                                     BigInt?
+  cashback_balance                                Decimal                            @db.Decimal(20, 2)
+  uuid                                            String?                            @unique(map: "account_user_uuid_b4063ea1_uniq") @db.Uuid
+  is_deleted                                      Boolean                            @map("_is_deleted")
+  about_instructionanswer                         about_instructionanswer[]
+  about_typo                                      about_typo[]
+  account_courier                                 account_courier?
+  common_district                                 common_district?                   @relation(fields: [district_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_user_district_id_b5d92114_fk_common_district_id")
+  account_user_groups                             account_user_groups[]
+  account_user_user_permissions                   account_user_user_permissions[]
+  account_userloginaction                         account_userloginaction[]
+  admincommands_commandruninstance                admincommands_commandruninstance[]
+  auditlog_logentry                               auditlog_logentry[]
+  common_notifications                            common_notifications[]
+  common_notifications_viewers                    common_notifications_viewers[]
+  common_readstoryitem                            common_readstoryitem[]
+  delivery_bts_deliveryorder                      delivery_bts_deliveryorder[]
+  django_admin_log                                django_admin_log[]
+  order_cartproduct                               order_cartproduct[]
+  order_couponuser                                order_couponuser[]
+  order_order_order_order_user_idToaccount_user   order_order[]                      @relation("order_order_user_idToaccount_user")
+  order_order_order_order_worker_idToaccount_user order_order[]                      @relation("order_order_worker_idToaccount_user")
+  payment_card                                    payment_card[]
+  product_comment                                 product_comment[]
+  product_productlikeduser                        product_productlikeduser[]
+  products_liked_by                               products_liked_by[]
+
+  @@index([district_id], map: "account_user_distict_id_aae74201")
+  @@index([phone], map: "account_user_phone_1704cc19_like")
+}
+
+model account_user_groups {
+  id           BigInt       @id @default(autoincrement())
+  user_id      BigInt
+  group_id     Int
+  auth_group   auth_group   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_user_groups_group_id_6c71f749_fk_auth_group_id")
+  account_user account_user @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_user_groups_user_id_14345e7b_fk_account_user_id")
+
+  @@unique([user_id, group_id], map: "account_user_groups_user_id_group_id_4d09af3e_uniq")
+  @@index([group_id], map: "account_user_groups_group_id_6c71f749")
+  @@index([user_id], map: "account_user_groups_user_id_14345e7b")
+}
+
+model account_user_user_permissions {
+  id              BigInt          @id @default(autoincrement())
+  user_id         BigInt
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_user_user_pe_permission_id_66c44191_fk_auth_perm")
+  account_user    account_user    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_user_user_pe_user_id_cc42d270_fk_account_u")
+
+  @@unique([user_id, permission_id], map: "account_user_user_permis_user_id_permission_id_48bdd28b_uniq")
+  @@index([permission_id], map: "account_user_user_permissions_permission_id_66c44191")
+  @@index([user_id], map: "account_user_user_permissions_user_id_cc42d270")
+}
+
+model account_userloginaction {
+  id           BigInt       @id @default(autoincrement())
+  created_at   DateTime     @db.Timestamptz(6)
+  updated_at   DateTime     @db.Timestamptz(6)
+  os_system    String       @db.VarChar(411)
+  user_id      BigInt
+  account_user account_user @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_userloginaction_user_id_0cf873c8_fk_account_user_id")
+
+  @@index([user_id], map: "account_userloginaction_user_id_0cf873c8")
+}
+
+model admincommands_commandruninstance {
+  id             BigInt        @id @default(autoincrement())
+  command        String
+  stdout         String
+  stderr         String
+  exception      String
+  executed_at    DateTime      @db.Timestamptz(6)
+  finished_at    DateTime?     @db.Timestamptz(6)
+  runner_user_id BigInt?
+  account_user   account_user? @relation(fields: [runner_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admincommands_comman_runner_user_id_30ba9a1c_fk_account_u")
+
+  @@index([runner_user_id], map: "admincommands_commandruninstance_runner_user_id_30ba9a1c")
+}
+
+model auditlog_logentry {
+  id                  Int                 @id @default(autoincrement())
+  object_pk           String              @db.VarChar(255)
+  object_id           BigInt?
+  object_repr         String
+  action              Int                 @db.SmallInt
+  changes             String
+  timestamp           DateTime            @db.Timestamptz(6)
+  actor_id            BigInt?
+  content_type_id     Int
+  remote_addr         String?             @db.Inet
+  additional_data     Json?
+  serialized_data     Json?
+  account_user        account_user?       @relation(fields: [actor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auditlog_logentry_actor_id_959271d2_fk_account_user_id")
+  django_content_type django_content_type @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auditlog_logentry_content_type_id_75830218_fk_django_co")
+
+  @@index([action], map: "auditlog_logentry_action_229afe39")
+  @@index([actor_id], map: "auditlog_logentry_actor_id_959271d2")
+  @@index([content_type_id], map: "auditlog_logentry_content_type_id_75830218")
+  @@index([object_id], map: "auditlog_logentry_object_id_09c2eee8")
+  @@index([object_pk], map: "auditlog_logentry_object_pk_6e3219c0")
+  @@index([object_pk], map: "auditlog_logentry_object_pk_6e3219c0_like")
+  @@index([timestamp], map: "auditlog_logentry_timestamp_37867bb0")
+}
+
+model auth_group {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(150)
+  account_user_groups    account_user_groups[]
+  auth_group_permissions auth_group_permissions[]
+
+  @@index([name], map: "auth_group_name_a6ea08ec_like")
+}
+
+model auth_group_permissions {
+  id              BigInt          @id @default(autoincrement())
+  group_id        Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm")
+  auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id")
+
+  @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+  @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+  @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+}
+
+model auth_permission {
+  id                            Int                             @id @default(autoincrement())
+  name                          String                          @db.VarChar(255)
+  content_type_id               Int
+  codename                      String                          @db.VarChar(100)
+  account_user_user_permissions account_user_user_permissions[]
+  auth_group_permissions        auth_group_permissions[]
+  django_content_type           django_content_type             @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_permission_content_type_id_2f476e4b_fk_django_co")
+
+  @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+  @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+}
+
+model common_country {
+  id       BigInt     @id @default(autoincrement())
+  name     String     @db.VarChar(255)
+  name_uz  String?    @db.VarChar(255)
+  name_sr  String?    @db.VarChar(255)
+  name_ru  String?    @db.VarChar(255)
+  products products[]
+}
+
+model common_district {
+  id                                                                                     BigInt                                @id @default(autoincrement())
+  title                                                                                  String                                @db.VarChar(500)
+  title_uz                                                                               String?                               @db.VarChar(500)
+  title_sr                                                                               String?                               @db.VarChar(500)
+  title_ru                                                                               String?                               @db.VarChar(500)
+  region_id                                                                              BigInt
+  delivery_id                                                                            Int?                                  @unique
+  soato                                                                                  String?                               @unique @db.VarChar(32)
+  about_contact                                                                          about_contact[]
+  about_setting_own_delivery_disticts                                                    about_setting_own_delivery_disticts[]
+  account_user                                                                           account_user[]
+  common_region                                                                          common_region                         @relation(fields: [region_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_district_region_id_ed9559e4_fk_common_region_id")
+  delivery_bts_deliveryorder_delivery_bts_deliveryorder_receiverCity_idTocommon_district delivery_bts_deliveryorder[]          @relation("delivery_bts_deliveryorder_receiverCity_idTocommon_district")
+  delivery_bts_deliveryorder_delivery_bts_deliveryorder_senderCity_idTocommon_district   delivery_bts_deliveryorder[]          @relation("delivery_bts_deliveryorder_senderCity_idTocommon_district")
+  order_order                                                                            order_order[]
+  product_warehouse                                                                      product_warehouse[]
+
+  @@index([region_id], map: "common_district_region_id_ed9559e4")
+  @@index([soato], map: "common_district_soato_a7700be8_like")
+}
+
+model common_faq {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  question   String   @db.VarChar(255)
+  answer     String
+}
+
+model common_footer {
+  id                BigInt              @id @default(autoincrement())
+  created_at        DateTime            @db.Timestamptz(6)
+  updated_at        DateTime            @db.Timestamptz(6)
+  title             String              @db.VarChar(256)
+  title_uz          String?             @db.VarChar(256)
+  title_sr          String?             @db.VarChar(256)
+  title_ru          String?             @db.VarChar(256)
+  order             Int
+  common_footeritem common_footeritem[]
+}
+
+model common_footeritem {
+  id            BigInt        @id @default(autoincrement())
+  created_at    DateTime      @db.Timestamptz(6)
+  updated_at    DateTime      @db.Timestamptz(6)
+  title         String        @db.VarChar(256)
+  title_uz      String?       @db.VarChar(256)
+  title_sr      String?       @db.VarChar(256)
+  title_ru      String?       @db.VarChar(256)
+  path          String        @db.VarChar(256)
+  order         Int
+  footer_id     BigInt
+  common_footer common_footer @relation(fields: [footer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_footeritem_footer_id_4535a049_fk_common_footer_id")
+
+  @@index([footer_id], map: "common_footeritem_footer_id_4535a049")
+}
+
+model common_headermenu {
+  id               BigInt            @id @default(autoincrement())
+  created_at       DateTime          @db.Timestamptz(6)
+  updated_at       DateTime          @db.Timestamptz(6)
+  title            String            @db.VarChar(255)
+  title_uz         String?           @db.VarChar(255)
+  title_sr         String?           @db.VarChar(255)
+  title_ru         String?           @db.VarChar(255)
+  order            Int
+  is_active        Boolean
+  category_id      BigInt?
+  product_category product_category? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_headermenu_category_id_b18b40fa_fk_product_category_id")
+
+  @@index([category_id], map: "common_headermenu_category_id_b18b40fa")
+}
+
+model common_news {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  title      String   @db.VarChar(255)
+  title_uz   String?  @db.VarChar(255)
+  title_sr   String?  @db.VarChar(255)
+  title_ru   String?  @db.VarChar(255)
+  slug       String   @unique @db.VarChar(255)
+  content    String
+  content_uz String?
+  content_sr String?
+  content_ru String?
+  image      String?  @db.VarChar(100)
+  date       DateTime @db.Timestamptz(6)
+  is_active  Boolean
+
+  @@index([slug], map: "common_news_slug_a98ef19a_like")
+}
+
+model common_notifications {
+  id                           BigInt                         @id @default(autoincrement())
+  created_at                   DateTime                       @db.Timestamptz(6)
+  updated_at                   DateTime                       @db.Timestamptz(6)
+  title                        String                         @db.VarChar(255)
+  title_uz                     String?                        @db.VarChar(255)
+  title_sr                     String?                        @db.VarChar(255)
+  title_ru                     String?                        @db.VarChar(255)
+  description                  String
+  description_uz               String?
+  description_sr               String?
+  description_ru               String?
+  content                      String
+  content_uz                   String?
+  content_sr                   String?
+  content_ru                   String?
+  date                         DateTime                       @db.Timestamptz(6)
+  image                        String?                        @db.VarChar(100)
+  content_type_id              Int?
+  object_id                    Int?
+  type                         String?                        @db.VarChar(32)
+  user_id                      BigInt?
+  django_content_type          django_content_type?           @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_notifications_content_type_id_bd0089a7_fk_django_co")
+  account_user                 account_user?                  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_notifications_user_id_c527789f_fk_account_user_id")
+  common_notifications_viewers common_notifications_viewers[]
+
+  @@index([content_type_id], map: "common_notifications_content_type_id_bd0089a7")
+  @@index([user_id], map: "common_notifications_user_id_c527789f")
+}
+
+model common_notifications_viewers {
+  id                   BigInt               @id(map: "common_notifications_readers_pkey") @default(autoincrement())
+  notifications_id     BigInt
+  user_id              BigInt
+  common_notifications common_notifications @relation(fields: [notifications_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_notifications_notifications_id_843216d9_fk_common_no")
+  account_user         account_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_notifications_user_id_6e07c539_fk_account_u")
+
+  @@unique([notifications_id, user_id], map: "common_notifications_rea_notifications_id_user_id_a61ae576_uniq")
+  @@index([notifications_id], map: "common_notifications_readers_notifications_id_843216d9")
+  @@index([user_id], map: "common_notifications_readers_user_id_6e07c539")
+}
+
+model common_readstoryitem {
+  id               BigInt           @id @default(autoincrement())
+  created_at       DateTime         @db.Timestamptz(6)
+  updated_at       DateTime         @db.Timestamptz(6)
+  fingerprint      String?          @db.VarChar(512)
+  story_item_id    BigInt
+  user_id          BigInt?
+  common_storyitem common_storyitem @relation(fields: [story_item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_readstoryitem_story_item_id_855f218e_fk_common_st")
+  account_user     account_user?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_readstoryitem_user_id_65c25aef_fk_account_user_id")
+
+  @@index([story_item_id], map: "common_readstoryitem_story_item_id_855f218e")
+  @@index([user_id], map: "common_readstoryitem_user_id_65c25aef")
+}
+
+model common_region {
+  id                                                                                     BigInt                               @id @default(autoincrement())
+  title                                                                                  String                               @db.VarChar(500)
+  title_ru                                                                               String?                              @db.VarChar(500)
+  title_sr                                                                               String?                              @db.VarChar(500)
+  title_uz                                                                               String?                              @db.VarChar(500)
+  delivery_id                                                                            Int?                                 @unique
+  soato                                                                                  String?                              @unique @db.VarChar(32)
+  about_setting_own_delivery_regions                                                     about_setting_own_delivery_regions[]
+  common_district                                                                        common_district[]
+  delivery_bts_deliveryorder_delivery_bts_deliveryorder_receiverRegion_idTocommon_region delivery_bts_deliveryorder[]         @relation("delivery_bts_deliveryorder_receiverRegion_idTocommon_region")
+  delivery_bts_deliveryorder_delivery_bts_deliveryorder_senderRegion_idTocommon_region   delivery_bts_deliveryorder[]         @relation("delivery_bts_deliveryorder_senderRegion_idTocommon_region")
+
+  @@index([soato], map: "common_region_soato_aa85baa6_like")
+}
+
+model common_staticpage {
+  id              BigInt   @id @default(autoincrement())
+  created_at      DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
+  title           String   @db.VarChar(256)
+  title_uz        String?  @db.VarChar(256)
+  title_sr        String?  @db.VarChar(256)
+  title_ru        String?  @db.VarChar(256)
+  second_title    String   @db.VarChar(256)
+  second_title_uz String?  @db.VarChar(256)
+  second_title_sr String?  @db.VarChar(256)
+  second_title_ru String?  @db.VarChar(256)
+  body            String
+  body_uz         String?
+  body_sr         String?
+  body_ru         String?
+  slug            String   @unique @db.VarChar(255)
+  is_active       Boolean
+
+  @@index([slug], map: "common_staticpage_slug_cbb1de68_like")
+}
+
+model common_story {
+  id               BigInt             @id @default(autoincrement())
+  created_at       DateTime           @db.Timestamptz(6)
+  updated_at       DateTime           @db.Timestamptz(6)
+  title            String?            @db.VarChar(255)
+  title_uz         String?            @db.VarChar(255)
+  title_sr         String?            @db.VarChar(255)
+  title_ru         String?            @db.VarChar(255)
+  description      String
+  description_uz   String?
+  description_sr   String?
+  description_ru   String?
+  url              String?            @db.VarChar(200)
+  image            String?            @db.VarChar(100)
+  is_active        Boolean
+  end_time         DateTime           @db.Timestamptz(6)
+  product_id       BigInt?
+  video_url        String?            @db.VarChar(200)
+  video_duration   Int?
+  video            String?            @db.VarChar(100)
+  products         products?          @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_story_product_id_64d06102_fk_products_id")
+  common_storyitem common_storyitem[]
+
+  @@index([product_id], map: "common_story_product_id_64d06102")
+}
+
+model common_storyitem {
+  id                   BigInt                 @id @default(autoincrement())
+  created_at           DateTime               @db.Timestamptz(6)
+  updated_at           DateTime               @db.Timestamptz(6)
+  title                String?                @db.VarChar(256)
+  title_uz             String?                @db.VarChar(256)
+  title_sr             String?                @db.VarChar(256)
+  title_ru             String?                @db.VarChar(256)
+  description          String                 @db.VarChar(256)
+  description_uz       String?                @db.VarChar(256)
+  description_sr       String?                @db.VarChar(256)
+  description_ru       String?                @db.VarChar(256)
+  image                String?                @db.VarChar(100)
+  url                  String?                @db.VarChar(200)
+  video                String?                @db.VarChar(100)
+  video_url            String?                @db.VarChar(200)
+  video_duration       Int?
+  story_id             BigInt
+  common_readstoryitem common_readstoryitem[]
+  common_story         common_story           @relation(fields: [story_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "common_storyitem_story_id_349648f0_fk_common_story_id")
+
+  @@index([story_id], map: "common_storyitem_story_id_349648f0")
+}
+
+model delivery_bts_deliveryorder {
+  id                                                                          BigInt          @id @default(autoincrement())
+  created_at                                                                  DateTime        @db.Timestamptz(6)
+  updated_at                                                                  DateTime        @db.Timestamptz(6)
+  status                                                                      Int
+  senderAddress                                                               String          @db.VarChar(255)
+  senderReal                                                                  String          @db.VarChar(255)
+  senderPhone                                                                 String          @db.VarChar(255)
+  receiverAddress                                                             String          @db.VarChar(255)
+  receiverPhone                                                               String          @db.VarChar(255)
+  receiverPhone1                                                              String?         @db.VarChar(255)
+  senderDelivery                                                              Int
+  receiverDelivery                                                            Int
+  package                                                                     Int
+  postType                                                                    Int
+  cost                                                                        Decimal?        @db.Decimal(15, 2)
+  weight                                                                      Decimal         @db.Decimal(15, 3)
+  piece                                                                       Int
+  volume                                                                      Int
+  urgent                                                                      Int
+  takePhoto                                                                   Int
+  senderSign                                                                  String?         @db.VarChar(255)
+  receiverSign                                                                String?         @db.VarChar(255)
+  senderDate                                                                  DateTime?       @db.Date
+  receiverDate                                                                DateTime?       @db.Date
+  barcode                                                                     String?         @db.VarChar(255)
+  order_id                                                                    BigInt          @unique
+  receiver_id                                                                 BigInt
+  receiverCity_id                                                             BigInt
+  receiverRegion_id                                                           BigInt?
+  senderCity_id                                                               BigInt
+  senderRegion_id                                                             BigInt
+  bts_order_id                                                                String?         @unique @db.VarChar(255)
+  is_test                                                                     Boolean
+  common_district_delivery_bts_deliveryorder_receiverCity_idTocommon_district common_district @relation("delivery_bts_deliveryorder_receiverCity_idTocommon_district", fields: [receiverCity_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliver_receiverCity_id_36599aad_fk_common_di")
+  common_region_delivery_bts_deliveryorder_receiverRegion_idTocommon_region   common_region?  @relation("delivery_bts_deliveryorder_receiverRegion_idTocommon_region", fields: [receiverRegion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliver_receiverRegion_id_f3f22306_fk_common_re")
+  account_user                                                                account_user    @relation(fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliver_receiver_id_33be8c07_fk_account_u")
+  common_district_delivery_bts_deliveryorder_senderCity_idTocommon_district   common_district @relation("delivery_bts_deliveryorder_senderCity_idTocommon_district", fields: [senderCity_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliver_senderCity_id_f8a94816_fk_common_di")
+  common_region_delivery_bts_deliveryorder_senderRegion_idTocommon_region     common_region   @relation("delivery_bts_deliveryorder_senderRegion_idTocommon_region", fields: [senderRegion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliver_senderRegion_id_834acbb8_fk_common_re")
+  order_order                                                                 order_order     @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "delivery_bts_deliveryorder_order_id_f32c9bce_fk_order_order_id")
+
+  @@index([bts_order_id], map: "delivery_bts_deliveryorder_bts_order_id_400ac494_like")
+  @@index([receiverCity_id], map: "delivery_bts_deliveryorder_receiverCity_id_36599aad")
+  @@index([receiverRegion_id], map: "delivery_bts_deliveryorder_receiverRegion_id_f3f22306")
+  @@index([receiver_id], map: "delivery_bts_deliveryorder_receiver_id_33be8c07")
+  @@index([senderCity_id], map: "delivery_bts_deliveryorder_senderCity_id_f8a94816")
+  @@index([senderRegion_id], map: "delivery_bts_deliveryorder_senderRegion_id_834acbb8")
+}
+
+model delivery_bts_deliverysetting {
+  id                       BigInt @id @default(autoincrement())
+  default_package_type     Int
+  default_postType         Int
+  default_senderDelivery   Int
+  default_receiverDelivery Int
+  auth_token               String @db.VarChar(255)
+}
+
+model django_admin_log {
+  id                  Int                  @id @default(autoincrement())
+  action_time         DateTime             @db.Timestamptz(6)
+  object_id           String?
+  object_repr         String               @db.VarChar(200)
+  action_flag         Int                  @db.SmallInt
+  change_message      String
+  content_type_id     Int?
+  user_id             BigInt
+  django_content_type django_content_type? @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_content_type_id_c4bce8eb_fk_django_co")
+  account_user        account_user         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_admin_log_user_id_c564eba6_fk_account_user_id")
+
+  @@index([content_type_id], map: "django_admin_log_content_type_id_c4bce8eb")
+  @@index([user_id], map: "django_admin_log_user_id_c564eba6")
+}
+
+model django_celery_beat_clockedschedule {
+  id                              Int                               @id @default(autoincrement())
+  clocked_time                    DateTime                          @db.Timestamptz(6)
+  django_celery_beat_periodictask django_celery_beat_periodictask[]
+}
+
+model django_celery_beat_crontabschedule {
+  id                              Int                               @id @default(autoincrement())
+  minute                          String                            @db.VarChar(240)
+  hour                            String                            @db.VarChar(96)
+  day_of_week                     String                            @db.VarChar(64)
+  day_of_month                    String                            @db.VarChar(124)
+  month_of_year                   String                            @db.VarChar(64)
+  timezone                        String                            @db.VarChar(63)
+  django_celery_beat_periodictask django_celery_beat_periodictask[]
+}
+
+model django_celery_beat_intervalschedule {
+  id                              Int                               @id @default(autoincrement())
+  every                           Int
+  period                          String                            @db.VarChar(24)
+  django_celery_beat_periodictask django_celery_beat_periodictask[]
+}
+
+model django_celery_beat_periodictask {
+  id                                  Int                                  @id @default(autoincrement())
+  name                                String                               @unique @db.VarChar(200)
+  task                                String                               @db.VarChar(200)
+  args                                String
+  kwargs                              String
+  queue                               String?                              @db.VarChar(200)
+  exchange                            String?                              @db.VarChar(200)
+  routing_key                         String?                              @db.VarChar(200)
+  expires                             DateTime?                            @db.Timestamptz(6)
+  enabled                             Boolean
+  last_run_at                         DateTime?                            @db.Timestamptz(6)
+  total_run_count                     Int
+  date_changed                        DateTime                             @db.Timestamptz(6)
+  description                         String
+  crontab_id                          Int?
+  interval_id                         Int?
+  solar_id                            Int?
+  one_off                             Boolean
+  start_time                          DateTime?                            @db.Timestamptz(6)
+  priority                            Int?
+  headers                             String
+  clocked_id                          Int?
+  expire_seconds                      Int?
+  django_celery_beat_clockedschedule  django_celery_beat_clockedschedule?  @relation(fields: [clocked_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_celery_beat_p_clocked_id_47a69f82_fk_django_ce")
+  django_celery_beat_crontabschedule  django_celery_beat_crontabschedule?  @relation(fields: [crontab_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_celery_beat_p_crontab_id_d3cba168_fk_django_ce")
+  django_celery_beat_intervalschedule django_celery_beat_intervalschedule? @relation(fields: [interval_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_celery_beat_p_interval_id_a8ca27da_fk_django_ce")
+  django_celery_beat_solarschedule    django_celery_beat_solarschedule?    @relation(fields: [solar_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "django_celery_beat_p_solar_id_a87ce72c_fk_django_ce")
+
+  @@index([clocked_id], map: "django_celery_beat_periodictask_clocked_id_47a69f82")
+  @@index([crontab_id], map: "django_celery_beat_periodictask_crontab_id_d3cba168")
+  @@index([interval_id], map: "django_celery_beat_periodictask_interval_id_a8ca27da")
+  @@index([name], map: "django_celery_beat_periodictask_name_265a36b7_like")
+  @@index([solar_id], map: "django_celery_beat_periodictask_solar_id_a87ce72c")
+}
+
+model django_celery_beat_periodictasks {
+  ident       Int      @id @db.SmallInt
+  last_update DateTime @db.Timestamptz(6)
+}
+
+model django_celery_beat_solarschedule {
+  id                              Int                               @id @default(autoincrement())
+  event                           String                            @db.VarChar(24)
+  latitude                        Decimal                           @db.Decimal(9, 6)
+  longitude                       Decimal                           @db.Decimal(9, 6)
+  django_celery_beat_periodictask django_celery_beat_periodictask[]
+
+  @@unique([event, latitude, longitude], map: "django_celery_beat_solar_event_latitude_longitude_ba64999a_uniq")
+}
+
+model django_content_type {
+  id                   Int                    @id @default(autoincrement())
+  app_label            String                 @db.VarChar(100)
+  model                String                 @db.VarChar(100)
+  auditlog_logentry    auditlog_logentry[]
+  auth_permission      auth_permission[]
+  common_notifications common_notifications[]
+  django_admin_log     django_admin_log[]
+
+  @@unique([app_label, model], map: "django_content_type_app_label_model_76bd3d3b_uniq")
+}
+
+model django_migrations {
+  id      BigInt   @id @default(autoincrement())
+  app     String   @db.VarChar(255)
+  name    String   @db.VarChar(255)
+  applied DateTime @db.Timestamptz(6)
+}
+
+model django_q_ormq {
+  id      Int       @id @default(autoincrement())
+  key     String    @db.VarChar(100)
+  payload String
+  lock    DateTime? @db.Timestamptz(6)
+}
+
+model django_q_schedule {
+  id            Int       @id @default(autoincrement())
+  func          String    @db.VarChar(256)
+  hook          String?   @db.VarChar(256)
+  args          String?
+  kwargs        String?
+  schedule_type String    @db.VarChar(1)
+  repeats       Int
+  next_run      DateTime? @db.Timestamptz(6)
+  task          String?   @db.VarChar(100)
+  name          String?   @db.VarChar(100)
+  minutes       Int?      @db.SmallInt
+  cron          String?   @db.VarChar(100)
+  cluster       String?   @db.VarChar(100)
+}
+
+model django_q_task {
+  name          String   @db.VarChar(100)
+  func          String   @db.VarChar(256)
+  hook          String?  @db.VarChar(256)
+  args          String?
+  kwargs        String?
+  result        String?
+  started       DateTime @db.Timestamptz(6)
+  stopped       DateTime @db.Timestamptz(6)
+  success       Boolean
+  id            String   @id @db.VarChar(32)
+  group         String?  @db.VarChar(100)
+  attempt_count Int
+
+  @@index([id], map: "django_q_task_id_32882367_like")
+}
+
+model django_session {
+  session_key  String   @id @db.VarChar(40)
+  session_data String
+  expire_date  DateTime @db.Timestamptz(6)
+
+  @@index([expire_date], map: "django_session_expire_date_a5c62663")
+  @@index([session_key], map: "django_session_session_key_c0390e0f_like")
+}
+
+model karmonPay_transaction {
+  id            BigInt       @id @default(autoincrement())
+  amount        Decimal      @db.Decimal(18, 2)
+  description   String?      @db.VarChar(255)
+  card_id       BigInt
+  order_id      BigInt
+  transactionId String?      @db.VarChar(255)
+  is_payed      Boolean
+  payment_card  payment_card @relation(fields: [card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "karmonPay_transaction_card_id_76325d3c_fk_payment_card_id")
+  order_order   order_order  @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "karmonPay_transaction_order_id_a0557bd2_fk_order_order_id")
+
+  @@index([card_id], map: "karmonPay_transaction_card_id_76325d3c")
+  @@index([order_id], map: "karmonPay_transaction_order_id_a0557bd2")
+}
+
+model location_service_district {
+  id                      BigInt                  @id @default(autoincrement())
+  title                   String                  @db.VarChar(255)
+  soato                   String                  @db.VarChar(255)
+  region_id               BigInt
+  title_sr                String?                 @db.VarChar(255)
+  title_ru                String?                 @db.VarChar(255)
+  title_uz                String?                 @db.VarChar(255)
+  location_service_region location_service_region @relation(fields: [region_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_service_dis_region_id_cf5810f1_fk_location_")
+
+  @@index([region_id], map: "location_service_district_region_id_cf5810f1")
+}
+
+model location_service_region {
+  id                        BigInt                      @id @default(autoincrement())
+  title                     String                      @db.VarChar(255)
+  soato                     String                      @db.VarChar(255)
+  title_sr                  String?                     @db.VarChar(255)
+  title_ru                  String?                     @db.VarChar(255)
+  title_uz                  String?                     @db.VarChar(255)
+  location_service_district location_service_district[]
+}
+
+model order_cartproduct {
+  id           BigInt        @id @default(autoincrement())
+  created_at   DateTime      @db.Timestamptz(6)
+  updated_at   DateTime      @db.Timestamptz(6)
+  amount       Int
+  is_active    Boolean
+  product_id   BigInt
+  user_id      BigInt?
+  fingerprint  String?       @db.VarChar(255)
+  products     products      @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_cartproduct_product_id_c8dfb40f_fk_products_id")
+  account_user account_user? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_cartproduct_user_id_e2d87521_fk_account_user_id")
+
+  @@index([product_id], map: "order_cartproduct_product_id_c8dfb40f")
+  @@index([user_id], map: "order_cartproduct_user_id_e2d87521")
+}
+
+model order_coupon {
+  id               BigInt             @id @default(autoincrement())
+  created_at       DateTime           @db.Timestamptz(6)
+  updated_at       DateTime           @db.Timestamptz(6)
+  title            String             @db.VarChar(255)
+  code             String             @unique @db.VarChar(32)
+  from_date        DateTime           @db.Timestamptz(6)
+  to_date          DateTime           @db.Timestamptz(6)
+  amount           Decimal            @db.Decimal(18, 2)
+  is_active        Boolean
+  limit_user       Int?
+  order_couponuser order_couponuser[]
+
+  @@index([code], map: "order_coupon_code_064f80e4_like")
+}
+
+model order_couponuser {
+  id           BigInt        @id @default(autoincrement())
+  redeemed_at  DateTime      @db.Timestamptz(6)
+  coupon_id    BigInt?
+  user_id      BigInt
+  amount       Decimal?      @db.Decimal(18, 2)
+  order_coupon order_coupon? @relation(fields: [coupon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_couponuser_coupon_id_ccf0813a_fk_order_coupon_id")
+  account_user account_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_couponuser_user_id_a53cc3f0_fk_account_user_id")
+
+  @@unique([coupon_id, user_id], map: "order_couponuser_coupon_id_user_id_78da5aba_uniq")
+  @@index([coupon_id], map: "order_couponuser_coupon_id_ccf0813a")
+  @@index([user_id], map: "order_couponuser_user_id_a53cc3f0")
+}
+
+model order_currency {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  type       Int      @unique(map: "order_currency_type_b64f9cc1_uniq") @db.SmallInt
+  conversion Decimal  @db.Decimal(10, 2)
+}
+
+model order_distancetariff {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  start      Int      @unique
+  end        Int      @unique
+  price      Decimal  @db.Decimal(18, 2)
+  type       Int
+}
+
+model order_order {
+  id                                               BigInt                      @id @default(autoincrement())
+  updated_at                                       DateTime                    @db.Timestamptz(6)
+  status                                           Int                         @db.SmallInt
+  is_deleted                                       Boolean
+  worker_count                                     Int
+  address                                          String                      @db.VarChar(1024)
+  receiver_fish                                    String                      @db.VarChar(255)
+  receiver_phone                                   String                      @db.VarChar(255)
+  latitude                                         Decimal                     @db.Decimal(9, 6)
+  longitude                                        Decimal                     @db.Decimal(9, 6)
+  payment_status                                   Int                         @db.SmallInt
+  payment_type                                     Int                         @db.SmallInt
+  delivery_price                                   Decimal                     @db.Decimal(18, 2)
+  worker_price                                     Decimal                     @db.Decimal(18, 2)
+  total_price                                      Decimal                     @db.Decimal(18, 2)
+  coupon_price                                     Decimal                     @db.Decimal(18, 2)
+  order_price                                      Decimal                     @db.Decimal(18, 2)
+  paid_time                                        DateTime?                   @db.Timestamptz(6)
+  verified_time                                    DateTime?                   @db.Timestamptz(6)
+  created_at                                       DateTime                    @db.Timestamptz(6)
+  total_distance                                   BigInt
+  total_weight                                     Decimal                     @db.Decimal(18, 3)
+  user_id                                          BigInt
+  distance_price                                   Decimal                     @db.Decimal(18, 2)
+  weight_price                                     Decimal                     @db.Decimal(18, 2)
+  courier_id                                       BigInt?
+  worker_id                                        BigInt?
+  receiver_phone2                                  String?                     @db.VarChar(255)
+  card_id                                          BigInt?
+  payment_transaction_id                           String?                     @db.VarChar(255)
+  canceled_time                                    DateTime?                   @db.Timestamptz(6)
+  cashback_price                                   Decimal                     @db.Decimal(18, 2)
+  use_cashback_balance                             Boolean
+  district_id                                      BigInt?
+  payment_transaction_create_date                  DateTime?                   @db.Timestamptz(6)
+  location_map                                     String?                     @db.VarChar(24)
+  delivery_type                                    Int                         @db.SmallInt
+  discount                                         Decimal                     @db.Decimal(18, 2)
+  delivery_bts_deliveryorder                       delivery_bts_deliveryorder?
+  karmonPay_transaction                            karmonPay_transaction[]
+  payment_card                                     payment_card?               @relation(fields: [card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_order_card_id_988dd904_fk_payment_card_id")
+  account_courier                                  account_courier?            @relation(fields: [courier_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_order_courier_id_9ff6eb07_fk_account_courier_id")
+  common_district                                  common_district?            @relation(fields: [district_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_order_district_id_50ba7521_fk_common_district_id")
+  account_user_order_order_user_idToaccount_user   account_user                @relation("order_order_user_idToaccount_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_order_user_id_7cf9bc2b_fk_account_user_id")
+  account_user_order_order_worker_idToaccount_user account_user?               @relation("order_order_worker_idToaccount_user", fields: [worker_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_order_worker_id_ca5674c4_fk_account_user_id")
+  order_ordercard                                  order_ordercard?
+  order_orderproduct                               order_orderproduct[]
+  order_orderstatuslog                             order_orderstatuslog[]
+  payment_paycomreceipt                            payment_paycomreceipt[]
+
+  @@index([card_id], map: "order_order_card_id_988dd904")
+  @@index([courier_id], map: "order_order_courier_id_9ff6eb07")
+  @@index([district_id], map: "order_order_district_id_50ba7521")
+  @@index([user_id], map: "order_order_user_id_7cf9bc2b")
+  @@index([worker_id], map: "order_order_worker_id_ca5674c4")
+}
+
+model order_ordercard {
+  id                    BigInt                 @id @default(autoincrement())
+  created_at            DateTime               @db.Timestamptz(6)
+  updated_at            DateTime               @db.Timestamptz(6)
+  status                Int                    @db.SmallInt
+  card_id               BigInt?
+  order_id              BigInt?                @unique
+  success_receipt_id    String?                @unique @db.VarChar(32)
+  payment_card          payment_card?          @relation(fields: [card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ordercard_card_id_95980dd6_fk_payment_card_id")
+  order_order           order_order?           @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ordercard_order_id_d0e4c542_fk_order_order_id")
+  payment_paycomreceipt payment_paycomreceipt? @relation(fields: [success_receipt_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ordercard_success_receipt_id_85921a7d_fk_payment_p")
+
+  @@index([card_id], map: "order_ordercard_card_id_95980dd6")
+  @@index([success_receipt_id], map: "order_ordercard_success_receipt_id_85921a7d_like")
+}
+
+model order_orderproduct {
+  id                       BigInt               @id @default(autoincrement())
+  created_at               DateTime             @db.Timestamptz(6)
+  updated_at               DateTime             @db.Timestamptz(6)
+  status                   Int                  @db.SmallInt
+  product_weight           Decimal              @db.Decimal(18, 3)
+  product_price            Decimal              @db.Decimal(18, 2)
+  amount                   Int
+  order_id                 BigInt
+  product_id               BigInt
+  suggested_to_id          BigInt?
+  sale_price               Decimal              @db.Decimal(18, 2)
+  unit_id                  BigInt?
+  result_price             Decimal              @db.Decimal(18, 2)
+  order_order              order_order          @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_orderproduct_order_id_18dae3b0_fk_order_order_id")
+  products                 products             @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_orderproduct_product_id_54ab3eb7_fk_products_id")
+  order_orderproduct       order_orderproduct?  @relation("order_orderproductToorder_orderproduct", fields: [suggested_to_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_orderproduct_suggested_to_id_3f92c665_fk_order_ord")
+  other_order_orderproduct order_orderproduct[] @relation("order_orderproductToorder_orderproduct")
+  product_unit             product_unit?        @relation(fields: [unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_orderproduct_unit_id_f5d5ff73_fk_product_unit_id")
+
+  @@index([order_id], map: "order_orderproduct_order_id_18dae3b0")
+  @@index([product_id], map: "order_orderproduct_product_id_54ab3eb7")
+  @@index([suggested_to_id], map: "order_orderproduct_suggested_to_id_3f92c665")
+  @@index([unit_id], map: "order_orderproduct_unit_id_f5d5ff73")
+}
+
+model order_orderstatuslog {
+  id               BigInt      @id @default(autoincrement())
+  created_at       DateTime    @db.Timestamptz(6)
+  updated_at       DateTime    @db.Timestamptz(6)
+  description_type Int         @db.SmallInt
+  status           Int         @db.SmallInt
+  date             DateTime    @db.Timestamptz(6)
+  order_id         BigInt
+  order_order      order_order @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_orderstatuslog_order_id_7ed142ed_fk_order_order_id")
+
+  @@unique([order_id, status], map: "order_orderstatuslog_order_id_status_621771fe_uniq")
+  @@index([order_id], map: "order_orderstatuslog_order_id_7ed142ed")
+}
+
+model order_paymenttypesetting {
+  id                   BigInt  @id @default(autoincrement())
+  is_card_valid        Boolean
+  is_cash_valid        Boolean
+  is_click_valid       Boolean
+  is_karmonpay_valid   Boolean
+  is_payme_valid       Boolean
+  is_uzumbank_valid    Boolean
+  use_card_real_amount Boolean
+}
+
+model order_weighttariff {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  start      Int      @unique
+  end        Int      @unique
+  price      Decimal  @db.Decimal(18, 2)
+  type       Int
+}
+
+model order_workerprice {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  price      Int
+}
+
+model payment_card {
+  id                       BigInt                    @id @default(autoincrement())
+  created_at               DateTime                  @db.Timestamptz(6)
+  updated_at               DateTime                  @db.Timestamptz(6)
+  number                   String                    @db.VarChar(128)
+  expire                   String                    @db.VarChar(5)
+  token                    String?                   @db.VarChar(513)
+  recurrent                Boolean
+  verify                   Boolean
+  type                     String?                   @db.VarChar(255)
+  user_id                  BigInt?
+  pan                      String?                   @db.VarChar(128)
+  verify_attempt           Int                       @db.SmallInt
+  card_range_id            BigInt?
+  merchant_id              String?                   @db.VarChar(128)
+  otp_session              String?                   @db.VarChar(128)
+  session                  String?                   @db.VarChar(128)
+  secret_number            String?                   @db.VarChar(128)
+  karmonPay_transaction    karmonPay_transaction[]
+  order_order              order_order[]
+  order_ordercard          order_ordercard[]
+  payment_cardnumberranges payment_cardnumberranges? @relation(fields: [card_range_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_card_card_range_id_60911aea_fk_payment_c")
+  account_user             account_user?             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_card_user_id_47696591_fk_account_user_id")
+  payment_paycomreceipt    payment_paycomreceipt[]
+
+  @@index([card_range_id], map: "payment_card_card_range_id_60911aea")
+  @@index([user_id], map: "payment_card_user_id_47696591")
+}
+
+model payment_cardnumberranges {
+  id             BigInt         @id @default(autoincrement())
+  created_at     DateTime       @db.Timestamptz(6)
+  updated_at     DateTime       @db.Timestamptz(6)
+  start          String         @db.VarChar(16)
+  end            String         @db.VarChar(16)
+  vendor_id      BigInt
+  payment_card   payment_card[]
+  payment_vendor payment_vendor @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_cardnumberra_vendor_id_f02733df_fk_payment_v")
+
+  @@index([vendor_id], map: "payment_cardnumberranges_vendor_id_f02733df")
+}
+
+model payment_paycomreceipt {
+  created_at      DateTime         @db.Timestamptz(6)
+  updated_at      DateTime         @db.Timestamptz(6)
+  merchant_id     String           @db.VarChar(64)
+  id              String           @id @map("_id") @db.VarChar(32)
+  create_time     String           @db.VarChar(32)
+  pay_time        String?          @db.VarChar(32)
+  cancel_time     String?          @db.VarChar(32)
+  state           Int
+  type            Int
+  amount          BigInt
+  commission      Int
+  account         Json?
+  detail          Json?
+  card            Json?
+  order_id        BigInt?
+  user_card_id    BigInt?
+  order_ordercard order_ordercard?
+  order_order     order_order?     @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_paycomreceipt_order_id_3f8f4cb5_fk_order_order_id")
+  payment_card    payment_card?    @relation(fields: [user_card_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_paycomreceipt_user_card_id_52a7433f_fk_payment_card_id")
+
+  @@index([id], map: "payment_paycomreceipt__id_54f3cf00_like")
+  @@index([order_id], map: "payment_paycomreceipt_order_id_3f8f4cb5")
+  @@index([user_card_id], map: "payment_paycomreceipt_user_card_id_52a7433f")
+}
+
+model payment_paymentmerchantrequestlog {
+  id                   BigInt   @id @default(autoincrement())
+  created_at           DateTime @db.Timestamptz(6)
+  updated_at           DateTime @db.Timestamptz(6)
+  provider             String?  @db.VarChar(32)
+  header               String
+  body                 String
+  method               String   @db.VarChar(32)
+  response             String?
+  response_status_code Int?
+  type                 String   @db.VarChar(32)
+}
+
+model payment_processing {
+  id             BigInt           @id @default(autoincrement())
+  created_at     DateTime         @db.Timestamptz(6)
+  updated_at     DateTime         @db.Timestamptz(6)
+  name           String           @unique(map: "payment_processing_name_bb079003_uniq") @db.VarChar(255)
+  payment_vendor payment_vendor[]
+
+  @@index([name], map: "payment_processing_name_bb079003_like")
+}
+
+model payment_vendor {
+  id                       BigInt                     @id @default(autoincrement())
+  created_at               DateTime                   @db.Timestamptz(6)
+  updated_at               DateTime                   @db.Timestamptz(6)
+  name                     String                     @db.VarChar(255)
+  processing_id            BigInt
+  payment_cardnumberranges payment_cardnumberranges[]
+  payment_processing       payment_processing         @relation(fields: [processing_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_vendor_processing_id_618f223c_fk_payment_processing_id")
+
+  @@unique([name, processing_id], map: "payment_vendor_name_processing_id_3958a19e_uniq")
+  @@index([processing_id], map: "payment_vendor_processing_id_618f223c")
+}
+
+model product_banner {
+  id               BigInt           @id @default(autoincrement())
+  created_at       DateTime         @db.Timestamptz(6)
+  updated_at       DateTime         @db.Timestamptz(6)
+  image            String?          @db.VarChar(100)
+  is_active        Boolean
+  category_id      BigInt
+  sub_title        String?          @db.VarChar(256)
+  sub_title_ru     String?          @db.VarChar(256)
+  sub_title_sr     String?          @db.VarChar(256)
+  sub_title_uz     String?          @db.VarChar(256)
+  title            String?          @db.VarChar(256)
+  title_ru         String?          @db.VarChar(256)
+  title_sr         String?          @db.VarChar(256)
+  title_uz         String?          @db.VarChar(256)
+  url              String?          @db.VarChar(200)
+  product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_banner_category_id_2d152ba6_fk_product_category_id")
+
+  @@index([category_id], map: "product_banner_category_id_2d152ba6")
+}
+
+model product_category {
+  id                                                                                  BigInt                         @id @default(autoincrement())
+  created_at                                                                          DateTime                       @db.Timestamptz(6)
+  updated_at                                                                          DateTime                       @db.Timestamptz(6)
+  title                                                                               String                         @db.VarChar(255)
+  title_uz                                                                            String?                        @db.VarChar(255)
+  title_sr                                                                            String?                        @db.VarChar(255)
+  title_ru                                                                            String?                        @db.VarChar(255)
+  icon                                                                                String?                        @db.VarChar(100)
+  order                                                                               Int
+  parent_id                                                                           BigInt?
+  slug                                                                                String?                        @unique(map: "product_category_slug_e1f8ccc4_uniq") @db.VarChar(255)
+  about_setting_about_setting_main_page_category_for_ladies_idToproduct_category      about_setting[]                @relation("about_setting_main_page_category_for_ladies_idToproduct_category")
+  about_setting_about_setting_main_page_category_for_body_bath_idToproduct_category   about_setting[]                @relation("about_setting_main_page_category_for_body_bath_idToproduct_category")
+  about_setting_about_setting_mobile_main_page_category_for_body_idToproduct_category about_setting[]                @relation("about_setting_mobile_main_page_category_for_body_idToproduct_category")
+  common_headermenu                                                                   common_headermenu[]
+  product_banner                                                                      product_banner[]
+  product_category                                                                    product_category?              @relation("product_categoryToproduct_category", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_category_parent_id_f6860923_fk_product_category_id")
+  other_product_category                                                              product_category[]             @relation("product_categoryToproduct_category")
+  product_megasale_categories                                                         product_megasale_categories[]
+  product_producttypeattribute                                                        product_producttypeattribute[]
+  products                                                                            products[]
+
+  @@index([parent_id], map: "product_category_parent_id_f6860923")
+  @@index([slug], map: "product_category_slug_e1f8ccc4_like")
+}
+
+model product_comment {
+  id           BigInt       @id @default(autoincrement())
+  created_at   DateTime     @db.Timestamptz(6)
+  updated_at   DateTime     @db.Timestamptz(6)
+  rate         Int
+  comment      String?
+  product_id   BigInt
+  user_id      BigInt
+  products     products     @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_comment_product_id_b32e96a2_fk_product_product_id")
+  account_user account_user @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_comment_user_id_ac70fe86_fk_account_user_id")
+
+  @@unique([user_id, product_id], map: "product_comment_user_id_product_id_199d8078_uniq")
+  @@index([product_id], map: "product_comment_product_id_b32e96a2")
+  @@index([user_id], map: "product_comment_user_id_ac70fe86")
+}
+
+model product_manufacturer {
+  id                             BigInt                           @id @default(autoincrement())
+  created_at                     DateTime                         @db.Timestamptz(6)
+  updated_at                     DateTime                         @db.Timestamptz(6)
+  title                          String                           @db.VarChar(255)
+  title_uz                       String?                          @db.VarChar(255)
+  title_sr                       String?                          @db.VarChar(255)
+  title_ru                       String?                          @db.VarChar(255)
+  override_price                 Decimal                          @db.Decimal(3, 0)
+  warehouse_id                   BigInt
+  icon                           String?                          @db.VarChar(100)
+  description                    String?                          @db.VarChar(255)
+  product_warehouse              product_warehouse                @relation(fields: [warehouse_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_manufacturer_warehouse_id_ae8b5e6e_fk_product_w")
+  product_megasale_manufacturers product_megasale_manufacturers[]
+  products                       products[]
+
+  @@index([warehouse_id], map: "product_manufacturer_warehouse_id_ae8b5e6e")
+}
+
+model product_megasale {
+  id                             BigInt                           @id @default(autoincrement())
+  created_at                     DateTime                         @db.Timestamptz(6)
+  updated_at                     DateTime                         @db.Timestamptz(6)
+  title                          String                           @db.VarChar(128)
+  percentage                     Int
+  is_active                      Boolean
+  start_at                       DateTime                         @db.Date
+  end_at                         DateTime                         @db.Date
+  title_ru                       String?                          @db.VarChar(128)
+  title_sr                       String?                          @db.VarChar(128)
+  title_uz                       String?                          @db.VarChar(128)
+  product_megasale_categories    product_megasale_categories[]
+  product_megasale_manufacturers product_megasale_manufacturers[]
+  product_megasale_products      product_megasale_products[]
+  products                       products[]
+}
+
+model product_megasale_categories {
+  id               BigInt           @id @default(autoincrement())
+  megasale_id      BigInt
+  category_id      BigInt
+  product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_cat_category_id_d8cf5e40_fk_product_c")
+  product_megasale product_megasale @relation(fields: [megasale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_cat_megasale_id_3d1721f7_fk_product_m")
+
+  @@unique([megasale_id, category_id], map: "product_megasale_categor_megasale_id_category_id_08e10d29_uniq")
+  @@index([category_id], map: "product_megasale_categories_category_id_d8cf5e40")
+  @@index([megasale_id], map: "product_megasale_categories_megasale_id_3d1721f7")
+}
+
+model product_megasale_manufacturers {
+  id                   BigInt               @id @default(autoincrement())
+  megasale_id          BigInt
+  manufacturer_id      BigInt
+  product_manufacturer product_manufacturer @relation(fields: [manufacturer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_man_manufacturer_id_d47ea16a_fk_product_m")
+  product_megasale     product_megasale     @relation(fields: [megasale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_man_megasale_id_0fa2ec05_fk_product_m")
+
+  @@unique([megasale_id, manufacturer_id], map: "product_megasale_manufac_megasale_id_manufacturer_7640e89d_uniq")
+  @@index([manufacturer_id], map: "product_megasale_manufacturers_manufacturer_id_d47ea16a")
+  @@index([megasale_id], map: "product_megasale_manufacturers_megasale_id_0fa2ec05")
+}
+
+model product_megasale_products {
+  id               BigInt           @id @default(autoincrement())
+  megasale_id      BigInt
+  product_id       BigInt
+  product_megasale product_megasale @relation(fields: [megasale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_pro_megasale_id_e37be448_fk_product_m")
+  products         products         @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_megasale_products_product_id_3d96bbdf_fk_products_id")
+
+  @@unique([megasale_id, product_id], map: "product_megasale_products_megasale_id_product_id_34b92f1d_uniq")
+  @@index([megasale_id], map: "product_megasale_products_megasale_id_e37be448")
+  @@index([product_id], map: "product_megasale_products_product_id_3d96bbdf")
+}
+
+model product_mostsearched {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  title      String   @db.VarChar(255)
+  title_uz   String?  @db.VarChar(255)
+  title_sr   String?  @db.VarChar(255)
+  title_ru   String?  @db.VarChar(255)
+  order      Int
+}
+
+model product_productgroup {
+  id         BigInt     @id @default(autoincrement())
+  created_at DateTime   @db.Timestamptz(6)
+  updated_at DateTime   @db.Timestamptz(6)
+  title      String     @db.VarChar(255)
+  products   products[]
+}
+
+model product_productimage {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  image      String?  @db.VarChar(100)
+  product_id BigInt
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_productimage_product_id_544084bb_fk_product_product_id")
+
+  @@index([product_id], map: "product_productimage_product_id_544084bb")
+}
+
+model product_productlikeduser {
+  id           BigInt        @id @default(autoincrement())
+  created_at   DateTime      @db.Timestamptz(6)
+  updated_at   DateTime      @db.Timestamptz(6)
+  product_id   BigInt?
+  user_id      BigInt?
+  fingerprint  String?       @db.VarChar(128)
+  products     products?     @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_productlikeduser_product_id_9e28be73_fk_products_id")
+  account_user account_user? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_productlikeduser_user_id_e2a5b210_fk_account_user_id")
+
+  @@unique([product_id, user_id], map: "product_productlikeduser_product_id_user_id_a65d3158_uniq")
+  @@index([product_id], map: "product_productlikeduser_product_id_9e28be73")
+  @@index([user_id], map: "product_productlikeduser_user_id_e2a5b210")
+}
+
+model product_productsystemchangehistory {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  info_text  String?
+  product_id BigInt
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_productsyste_product_id_bf2d93c1_fk_products_")
+
+  @@index([product_id], map: "product_productsystemchangehistory_product_id_bf2d93c1")
+}
+
+model product_producttypeattribute {
+  id                                         BigInt                                       @id @default(autoincrement())
+  created_at                                 DateTime                                     @db.Timestamptz(6)
+  updated_at                                 DateTime                                     @db.Timestamptz(6)
+  title                                      String                                       @db.VarChar(255)
+  title_uz                                   String?                                      @db.VarChar(255)
+  title_sr                                   String?                                      @db.VarChar(255)
+  title_ru                                   String?                                      @db.VarChar(255)
+  field_type                                 Int                                          @db.SmallInt
+  slug                                       String                                       @unique @db.VarChar(50)
+  is_required                                Boolean
+  category_id                                BigInt
+  product_category                           product_category                             @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_producttypea_category_id_f5448b13_fk_product_c")
+  product_producttypeattributecheckboxoption product_producttypeattributecheckboxoption[]
+  product_producttypeattributeselectoption   product_producttypeattributeselectoption[]
+
+  @@index([category_id], map: "product_producttypeattribute_category_id_f5448b13")
+  @@index([slug], map: "product_producttypeattribute_slug_d6a95e89_like")
+}
+
+model product_producttypeattributecheckboxoption {
+  id                           BigInt                       @id @default(autoincrement())
+  created_at                   DateTime                     @db.Timestamptz(6)
+  updated_at                   DateTime                     @db.Timestamptz(6)
+  title                        String                       @db.VarChar(255)
+  title_uz                     String?                      @db.VarChar(255)
+  title_sr                     String?                      @db.VarChar(255)
+  title_ru                     String?                      @db.VarChar(255)
+  product_attr_id              BigInt
+  product_producttypeattribute product_producttypeattribute @relation(fields: [product_attr_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_producttypea_product_attr_id_8b421870_fk_product_p")
+
+  @@index([product_attr_id], map: "product_producttypeattribu_product_attr_id_8b421870")
+}
+
+model product_producttypeattributeselectoption {
+  id                           BigInt                       @id @default(autoincrement())
+  created_at                   DateTime                     @db.Timestamptz(6)
+  updated_at                   DateTime                     @db.Timestamptz(6)
+  title                        String                       @db.VarChar(255)
+  title_uz                     String?                      @db.VarChar(255)
+  title_sr                     String?                      @db.VarChar(255)
+  title_ru                     String?                      @db.VarChar(255)
+  product_attr_id              BigInt
+  product_producttypeattribute product_producttypeattribute @relation(fields: [product_attr_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_producttypea_product_attr_id_3ac312a8_fk_product_p")
+
+  @@index([product_attr_id], map: "product_producttypeattribu_product_attr_id_3ac312a8")
+}
+
+model product_targetedaudience {
+  id         BigInt     @id @default(autoincrement())
+  created_at DateTime   @db.Timestamptz(6)
+  updated_at DateTime   @db.Timestamptz(6)
+  title      String     @db.VarChar(255)
+  title_uz   String?    @db.VarChar(255)
+  title_sr   String?    @db.VarChar(255)
+  title_ru   String?    @db.VarChar(255)
+  products   products[]
+}
+
+model product_unit {
+  id                 BigInt               @id @default(autoincrement())
+  created_at         DateTime             @db.Timestamptz(6)
+  updated_at         DateTime             @db.Timestamptz(6)
+  title              String               @db.VarChar(128)
+  title_uz           String?              @db.VarChar(128)
+  title_sr           String?              @db.VarChar(128)
+  title_ru           String?              @db.VarChar(128)
+  order_orderproduct order_orderproduct[]
+  products           products[]
+}
+
+model product_warehouse {
+  id                   BigInt                 @id @default(autoincrement())
+  created_at           DateTime               @db.Timestamptz(6)
+  updated_at           DateTime               @db.Timestamptz(6)
+  title                String                 @db.VarChar(128)
+  description          String?
+  latitude             Decimal                @db.Decimal(9, 6)
+  longitude            Decimal                @db.Decimal(9, 6)
+  district_id          BigInt?
+  about_setting        about_setting[]
+  product_manufacturer product_manufacturer[]
+  common_district      common_district?       @relation(fields: [district_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_warehouse_district_id_b2b8cb0c_fk_common_district_id")
+  products             products[]
+
+  @@index([district_id], map: "product_warehouse_district_id_b2b8cb0c")
+}
+
+model products {
+  id                                 BigInt                               @id(map: "product_product_pkey") @default(autoincrement())
+  created_at                         DateTime                             @db.Timestamptz(6)
+  updated_at                         DateTime                             @db.Timestamptz(6)
+  title                              String                               @db.VarChar(255)
+  title_uz                           String?                              @db.VarChar(255)
+  title_sr                           String?                              @db.VarChar(255)
+  title_ru                           String?                              @db.VarChar(255)
+  slug                               String                               @unique(map: "product_product_slug_key") @db.VarChar(512)
+  image                              String?                              @db.VarChar(100)
+  feature                            String?
+  feature_uz                         String?
+  feature_sr                         String?
+  feature_ru                         String?
+  apply                              String?
+  apply_uz                           String?
+  apply_sr                           String?
+  apply_ru                           String?
+  price                              Decimal                              @db.Decimal(18, 2)
+  sale_price                         Decimal?                             @db.Decimal(18, 2)
+  rate                               Float
+  views                              Int
+  comment_count                      Int
+  f                                  Json?
+  category_id                        BigInt?
+  manufacturer_id                    BigInt?
+  product_group_id                   BigInt?
+  is_new                             Boolean
+  is_recommendation                  Boolean
+  weight                             Decimal                              @db.Decimal(20, 3)
+  currency                           Int                                  @db.SmallInt
+  description                        String?
+  description_ru                     String?
+  description_sr                     String?
+  description_uz                     String?
+  note                               String?
+  is_active                          Boolean
+  override_manufacturer_price        Boolean
+  purchased_price                    Decimal?                             @db.Decimal(18, 2)
+  in_stock                           Int
+  warehouse_id                       BigInt
+  is_archive                         Boolean
+  unit_id                            BigInt?
+  order                              Int?
+  active_megasale_id                 BigInt?
+  manufactured_country_id            BigInt?
+  targeted_gender                    String?                              @db.VarChar(55)
+  year                               Int?
+  targeted_audience_id               BigInt?
+  regos_imported_date                DateTime?                            @db.Timestamptz(6)
+  regos_remote_id                    String?                              @unique @db.VarChar(255)
+  regos_extra_data                   Json?
+  regos_barcode                      String?                              @db.VarChar(255)
+  common_story                       common_story[]
+  order_cartproduct                  order_cartproduct[]
+  order_orderproduct                 order_orderproduct[]
+  product_comment                    product_comment[]
+  product_megasale_products          product_megasale_products[]
+  product_productimage               product_productimage[]
+  product_productlikeduser           product_productlikeduser[]
+  product_productsystemchangehistory product_productsystemchangehistory[]
+  product_manufacturer               product_manufacturer?                @relation(fields: [manufacturer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_product_manufacturer_id_4a7a0ae9_fk_product_m")
+  product_productgroup               product_productgroup?                @relation(fields: [product_group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_product_product_group_id_b27f3dbd_fk_product_p")
+  product_megasale                   product_megasale?                    @relation(fields: [active_megasale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_active_megasale_id_d3abd1ab_fk_product_megasale_id")
+  product_category                   product_category?                    @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_category_id_a7a3a156_fk_product_category_id")
+  common_country                     common_country?                      @relation(fields: [manufactured_country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_manufactured_country_id_e04597e6_fk_common_country_id")
+  product_targetedaudience           product_targetedaudience?            @relation(fields: [targeted_audience_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_targeted_audience_id_3e389171_fk_product_t")
+  product_unit                       product_unit?                        @relation(fields: [unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_unit_id_4dcdbc75_fk_product_unit_id")
+  product_warehouse                  product_warehouse                    @relation(fields: [warehouse_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_warehouse_id_efa28730_fk_product_warehouse_id")
+  products_liked_by                  products_liked_by[]
+
+  @@index([category_id], map: "product_product_category_id_0c725779")
+  @@index([manufacturer_id], map: "product_product_manufacturer_id_4a7a0ae9")
+  @@index([product_group_id], map: "product_product_product_group_id_b27f3dbd")
+  @@index([slug], map: "product_product_slug_76cde0ae_like")
+  @@index([active_megasale_id], map: "products_active_megasale_id_d3abd1ab")
+  @@index([manufactured_country_id], map: "products_manufactured_country_id_e04597e6")
+  @@index([regos_remote_id], map: "products_regos_remote_id_99d01aa6_like")
+  @@index([targeted_audience_id], map: "products_targeted_audience_id_3e389171")
+  @@index([unit_id], map: "products_unit_id_4dcdbc75")
+  @@index([warehouse_id], map: "products_warehouse_id_efa28730")
+  @@index([year], map: "products_year_f451368d")
+}
+
+model products_liked_by {
+  id           BigInt       @id(map: "product_product_liked_by_pkey") @default(autoincrement())
+  product_id   BigInt
+  user_id      BigInt
+  products     products     @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_product_like_product_id_48558e3a_fk_product_p")
+  account_user account_user @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_product_liked_by_user_id_7ce8eb14_fk_account_user_id")
+
+  @@unique([product_id, user_id], map: "product_product_liked_by_product_id_user_id_6ffa44db_uniq")
+  @@index([product_id], map: "product_product_liked_by_product_id_48558e3a")
+  @@index([user_id], map: "product_product_liked_by_user_id_7ce8eb14")
+}
+
+model rest_framework_api_key_apikey {
+  id          String    @id @db.VarChar(100)
+  created     DateTime  @db.Timestamptz(6)
+  name        String    @db.VarChar(50)
+  revoked     Boolean
+  expiry_date DateTime? @db.Timestamptz(6)
+  hashed_key  String    @db.VarChar(100)
+  prefix      String    @unique @db.VarChar(8)
+
+  @@index([created], map: "rest_framework_api_key_apikey_created_c61872d9")
+  @@index([id], map: "rest_framework_api_key_apikey_id_6e07e68e_like")
+  @@index([prefix], map: "rest_framework_api_key_apikey_prefix_4e0db5f8_like")
+}
+
+model thumbnail_kvstore {
+  key   String @id @db.VarChar(200)
+  value String
+
+  @@index([key], map: "thumbnail_kvstore_key_3f850178_like")
+}
