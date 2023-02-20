@@ -20,14 +20,43 @@ export class UserService {
     cursor?: Prisma.account_userWhereUniqueInput;
     where?: Prisma.account_userWhereInput;
     orderBy?: Prisma.account_userOrderByWithRelationInput;
+    select?: Prisma.account_userSelect;
   }): Promise<account_user[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where, orderBy, select } = params;
     return this.prisma.account_user.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
+      select: {
+        id: true,
+        phone: true,
+        last_login: true,
+        is_superuser: true,
+        created_at: true,
+        updated_at: true,
+        password: true,
+        is_active: true,
+        date_joined: true,
+        device: true,
+        ip_address: true,
+        is_verified: true,
+        last_generated: true,
+        full_name: true,
+        address: true,
+        pin: true,
+        avatar: true,
+        district_id: true,
+        cashback_balance: true,
+        uuid: true,
+        is_deleted: true,
+        coupon_balance: true,
+        language: true,
+        role: true,
+        email: true,
+        is_staff: true,
+      },
     });
   }
 
